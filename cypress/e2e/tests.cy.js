@@ -92,7 +92,41 @@ describe('Acesso ao site Amazon.com.br', () => {
         .click();
 
       cy.contains('#sc-subtotal-label-activecart', 'Subtotal (1 produto)');
+      });
 
+      it('Deve exibir a página de detalhes do produto corretamente', () => {
+        cy.get('#twotabsearchtextbox').type('macbook air m3');
+        cy.get('#nav-search-submit-button').click();
+        cy.get('div[data-cy="title-recipe"]').first().find('a.a-link-normal').click(); 
+      
+        cy.get('#productTitle').should('be.visible');
+        cy.get('.a-price').should('be.visible');
+      });
+            
+      it('Deve aplicar um filtro de categoria e exibir os produtos filtrados', () => {
+        cy.get('#twotabsearchtextbox').type('Playstation');
+        cy.get('#nav-search-submit-button').click();
+      
+        cy.get('#departments', { timeout: 10000 }).should('be.visible'); 
+      
+        cy.get('#departments').contains('Games e Consoles') .click();
+      
+        cy.get('.s-main-slot').should('be.visible');
+        cy.get('.s-main-slot .s-result-item').should('have.length.at.least', 1);
+      });
+         
+      it('Deve verificar a persistência do carrinho de compras entre sessões', () => {
+        cy.get('#twotabsearchtextbox').type('Geladeira Consul Frost Free 300 litros');
+        cy.get('#nav-search-submit-button').click();
+        cy.get('#a-autoid-1-announce.a-button-text').scrollIntoView().click();
+        cy.get('#nav-cart-count-container').click();
+        cy.contains('h2.a-size-extra-large.a-text-normal', 'Carrinho de compras');
+        
+        // Fechar o navegador e reabrir
+        cy.reload();
+        cy.get('#nav-cart-count-container').click();
+        cy.contains('h2.a-size-extra-large.a-text-normal', 'Carrinho de compras');
+      });     
     });
-});
+
 
