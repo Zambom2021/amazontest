@@ -24,5 +24,19 @@ jobs:
       - name: Install dependencies
         run: npm install
 
+      - name: Install Allure commandline
+        run: npm install -g allure-commandline
+
       - name: Run Cypress tests
-        run: npx cypress run
+        run: npx cypress run --reporter mochawesome --reporter-options reportDir=cypress/results,overwrite=true
+
+      - name: Generate Allure report
+        run: allure generate cypress/results --clean -o allure-report
+
+      - name: Upload Allure report as an artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: allure-report
+          path: allure-report
+
+
